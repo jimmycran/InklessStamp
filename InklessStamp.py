@@ -100,7 +100,7 @@ def create_watermark(input_pdf, output, watermark):
 if __name__ == '__main__':
     create_watermark(
         input_pdf=(file_path),
-        output=r'C:\Users\james.cran\Desktop\watermarked_test.pdf',
+        output=(file_path),
         watermark=r'C:\Users\james.cran\PycharmProjects\TestProject\pdfTable.pdf')
 
 root.quit()

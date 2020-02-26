@@ -3,12 +3,14 @@ from tkinter import filedialog
 
 root = Tk()
 
+# This opens a dialog box to select the Invoice that you wish to stamp.
 file_path = filedialog.askopenfilename()
 
-# List of Lists
+# The below the user input for the Invoice number and Nominal to be stamped
 invoice_number = input('What is the invoice number? ')
 nominal = input('What is the nominal? ')
 
+# This is the dataframe that populates the stamp
 data = [
     ['Invoice No.', str(invoice_number), 'Nominal', str(nominal)],
     ['1st Approver', '                    ', '2nd Approver', '                    '],
@@ -17,6 +19,7 @@ data = [
 
 fileName = 'pdfTable.pdf'
 
+# Reportlab module is used to create the stamp file
 from reportlab.platypus import SimpleDocTemplate
 from reportlab.lib.pagesizes import letter
 
@@ -26,57 +29,35 @@ pdf = SimpleDocTemplate(
 )
 
 from reportlab.platypus import Table
-table = Table(data)
+from reportlab.lib.enums import TA_LEFT
+table = Table(data, vAlign=TA_LEFT)
+
+elems = []
+elems.append(table)
 
 # add style
 from reportlab.platypus import TableStyle
 from reportlab.lib import colors
 
+# Yet to figure out how to move the table up to the top of the page
 style = TableStyle([
-    ('BACKGROUND', (0,0), (3,0), colors.white),
-    ('TEXTCOLOR',(0,0),(-1,0),colors.black),
+    ('BACKGROUND', (0,0), (-1,-1), colors.whitesmoke),
+    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
 
     ('ALIGN',(0,0),(-1,-1),'LEFT'),
+    ('BOX', (0, 0), (-1, -1), 2, colors.black),
+
+    ('GRID', (0, 0), (-1, -1), 2, colors.black),
 
     ('BOTTOMPADDING', (0,0), (-1,0), 5),
-
-#    ('BACKGROUND',(0,1),(-1,-1),colors.beige),
 ])
 table.setStyle(style)
 
-# 2) Alternate backgroud color
-#rowNumb = len(data)
-#for i in range(1, rowNumb):
-#    if i % 2 == 0:
-#        bc = colors.burlywood
-#    else:
-#        bc = colors.beige
-#
-#    ts = TableStyle(
-#        [('BACKGROUND', (0,i),(-1,i), bc)]
-#    )
-#    table.setStyle(ts)
-
-# 3) Add borders
-ts = TableStyle(
-    [
-    ('BOX',(0,0),(-1,-1),2,colors.black),
-
-    ('LINEBEFORE',(2,1),(2,-1),2,colors.red),
-    ('LINEABOVE',(0,2),(-1,2),2,colors.green),
-
-    ('GRID',(0,0),(-1,-1),2,colors.black),
-    ]
-)
-table.setStyle(ts)
-
-elems = []
-elems.append(table)
 
 pdf.build(elems)
 
 
-
+# PyPDF4 is used to merge the stamp to the invoice file
 from PyPDF4 import PdfFileWriter, PdfFileReader
 
 

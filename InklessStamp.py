@@ -1,60 +1,50 @@
 from tkinter import *
 from tkinter import filedialog
 
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import mm
+from reportlab.pdfgen import canvas
+from reportlab.platypus import Image, Paragraph, Table
+from reportlab.lib import colors
+
+import os
+
 root = Tk()
 
 # This opens a dialog box to select the Invoice that you wish to stamp.
 file_path = filedialog.askopenfilename()
 
-# The below the user input for the Invoice number and Nominal to be stamped
+c = canvas.Canvas('BayWaStamp.pdf', pagesize=A4)  # alternatively use bottomup=False
+width, height = A4
+
 invoice_number = input('What is the invoice number? ')
 nominal = input('What is the nominal? ')
 
-# This is the dataframe that populates the stamp
+
 data = [
     ['Invoice No.', str(invoice_number), 'Nominal', str(nominal)],
     ['1st Approver', '                    ', '2nd Approver', '                    '],
     ['Date', '', 'Date', ''],
 ]
 
-fileName = 'pdfTable.pdf'
+table = Table(data, colWidths=30*mm)
+table.setStyle([("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+                ('BACKGROUND', (0,0), (-1,-1), colors.whitesmoke),
+                ("ALIGN", (0,0), (-1,-1), "CENTER"),
+                ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                ('BOX', (0,0), (-1,-1), 0.25, colors.black)])
 
-# Reportlab module is used to create the stamp file
-from reportlab.platypus import SimpleDocTemplate
-from reportlab.lib.pagesizes import letter
+table.wrapOn(c, width, height)
+table.drawOn(c, 30*mm, 270*mm)
 
-pdf = SimpleDocTemplate(
-    fileName,
-    pagesize=letter
-)
+styles = getSampleStyleSheet()
+ptext = "This is an example."
+p = Paragraph(ptext, style=styles["Normal"])
+p.wrapOn(c, 50*mm, 50*mm)  # size of 'textbox' for linebreaks etc.
+p.drawOn(c, 0*mm, 0*mm)    # position of text / where to draw
 
-from reportlab.platypus import Table
-from reportlab.lib.enums import TA_LEFT
-table = Table(data, vAlign=TA_LEFT)
-
-elems = []
-elems.append(table)
-
-# add style
-from reportlab.platypus import TableStyle
-from reportlab.lib import colors
-
-# Yet to figure out how to move the table up to the top of the page
-style = TableStyle([
-    ('BACKGROUND', (0,0), (-1,-1), colors.whitesmoke),
-    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-
-    ('ALIGN',(0,0),(-1,-1),'LEFT'),
-    ('BOX', (0, 0), (-1, -1), 2, colors.black),
-
-    ('GRID', (0, 0), (-1, -1), 2, colors.black),
-
-    ('BOTTOMPADDING', (0,0), (-1,0), 5),
-])
-table.setStyle(style)
-
-
-pdf.build(elems)
+c.save()
 
 
 # PyPDF4 is used to merge the stamp to the invoice file
@@ -82,6 +72,8 @@ if __name__ == '__main__':
     create_watermark(
         input_pdf=(file_path),
         output=(file_path),
-        watermark=r'C:\Users\james.cran\PycharmProjects\TestProject\pdfTable.pdf')
+        watermark=r'C:\Users\james.cran\PycharmProjects\TestProject\BayWaStamp.pdf')
+
+os.startfile(file_path)
 
 root.quit()

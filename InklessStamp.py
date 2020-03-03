@@ -39,7 +39,7 @@ table.wrapOn(c, width, height)
 table.drawOn(c, 30*mm, 270*mm)
 
 styles = getSampleStyleSheet()
-ptext = "This is an example."
+ptext = " "
 p = Paragraph(ptext, style=styles["Normal"])
 p.wrapOn(c, 50*mm, 50*mm)  # size of 'textbox' for linebreaks etc.
 p.drawOn(c, 0*mm, 0*mm)    # position of text / where to draw

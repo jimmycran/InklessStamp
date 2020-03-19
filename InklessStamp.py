@@ -15,7 +15,8 @@ root = Tk()
 # This opens a dialog box to select the Invoice that you wish to stamp.
 file_path = filedialog.askopenfilename()
 
-c = canvas.Canvas('BayWaStamp.pdf', pagesize=A4)  # alternatively use bottomup=False
+# Can amend the filename for the stamp, but is just a temp file.
+c = canvas.Canvas('Stamp.pdf', pagesize=A4)  
 width, height = A4
 
 invoice_number = input('What is the invoice number? ')
@@ -58,7 +59,7 @@ def create_watermark(input_pdf, output, watermark):
     pdf_reader = PdfFileReader(input_pdf)
     pdf_writer = PdfFileWriter()
 
-    # Watermark all the pages
+    # Watermark all the pages, need to change this to one.
     for page in range(pdf_reader.getNumPages()):
         page = pdf_reader.getPage(page)
         page.mergePage(watermark_page)
@@ -72,7 +73,7 @@ if __name__ == '__main__':
     create_watermark(
         input_pdf=(file_path),
         output=(file_path),
-        watermark=r'C:\Users\james.cran\PycharmProjects\TestProject\BayWaStamp.pdf')
+        watermark=r'C:\Users\james.cran\PycharmProjects\TestProject\Stamp.pdf')
 
 os.startfile(file_path)
 
